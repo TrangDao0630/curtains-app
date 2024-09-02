@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useRef, useEffect} from 'react';
 
 import { NavLink } from 'react-router-dom';
 import './header.css';
@@ -23,10 +23,37 @@ const nav__links= [
     path:'cart',
     display: 'Cart'
   }
-]
+];
 
 const Header = () => {
-  return <header className="header">
+
+  const headerRef = useRef(null);
+
+  const menuRef = useRef(null);
+  
+  const stickyHeaderFunc = () =>{
+    window.addEventListener('scroll', ()=> {
+      if (
+        document.body.scrollTop > 80 ||
+        document.documentElement.scrollTop > 80
+      ) {
+        headerRef.current.classList.add('sticky__header')
+      } else {
+        headerRef.current.classList.remove('sticky__header')
+      }
+    });
+  };
+
+  useEffect(()=>{
+    stickyHeaderFunc();
+
+    return ()=> window.removeEventListener('scroll', stickyHeaderFunc);
+  });
+
+  const menuToggle = () => menuRef.current.classList.toggle('active__menu')
+
+  return (
+  <header className="header" ref={headerRef}>
     <Container>
       <Row>
         <div className="nav__wrapper">
@@ -37,7 +64,7 @@ const Header = () => {
             </div>
           </div>
 
-          <div className="navigation">
+          <div className="navigation " ref={menuRef} onClick ={menuToggle}>
             <ul className="menu">
               {nav__links.map((item, index) => (
                 <li className="nav__item" key={index}>
@@ -68,17 +95,18 @@ const Header = () => {
             <span>
               <motion.img whileTap={{ scale: 1.2 }} src={userIcon} alt="" />
             </span>
+            <div className="mobile__menu">
+              <span onClick={menuToggle}>
+                <i class="ri-menu-fill"></i>
+              </span>
+            </div>
           </div>
           
-          <div className="mobile__menu">
-            <span>
-              <i class="ri-menu-fill"></i>
-            </span>
-          </div>
+          
         </div>
       </Row>
     </Container>
   </header>  
-};
+)};
 
 export default Header;
